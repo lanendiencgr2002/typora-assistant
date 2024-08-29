@@ -1,9 +1,8 @@
 import os
 import re
 import shutil
-
 from PySide2.QtUiTools import QUiLoader
-from PySide2.QtWidgets import QApplication, QFileDialog, QMessageBox
+from PySide2.QtWidgets import QApplication, QFileDialog, QMessageBox, QInputDialog
 
 
 class Stats:
@@ -15,6 +14,8 @@ class Stats:
         self.ui.pushButton_21.clicked.connect(self.检查文md文件的图片完整性)
         self.ui.pushButton_20.clicked.connect(self.md和assets和md内图片全部换名字)
 
+    def 标准化路径(self,路径):
+        return os.path.normpath(路径).replace('\\', '/')
     def 返回文件夹内的md文件(self, 文件夹路径):
         if not 文件夹路径:
             return False, None
@@ -135,12 +136,26 @@ class Stats:
     def 获取文件夹路径(self):
         文件夹路径 = QFileDialog.getExistingDirectory(self.ui, "选择文件夹")
         return 文件夹路径
+
     def 返回md内所有图片路劲(self, 文件内容):
-        图片正则 = r'!\[.*?\]\((.*?)\)|<img.*?src=[\'\"](.*?)[\'\"].*?>'
-        所有匹配 = re.findall(图片正则, 文件内容)
-        所有路径 = [路径 for 匹配 in 所有匹配 for 路径 in 匹配 if 路径]
-        所有路径 = list(set(所有路径))  # 去重
-        return 所有路径
+        # Markdown格式
+        匹配文件中所有图片路劲 = r"!\[.*?\]\((.*?)\)"
+        # HTML img标签
+        匹配文件中所有图片路劲2 = r"<img\s+(?:[^>]*?\s+)?src=[\"'](.*?)[\"']"
+        所有图片文件路劲 = re.findall(匹配文件中所有图片路劲, 文件内容)
+        所有图片文件路劲2 = re.findall(匹配文件中所有图片路劲2, 文件内容)
+        所有路径 = 所有图片文件路劲 + 所有图片文件路劲2
+        # 过滤和标准化路径
+        过滤后的路径 = []
+        for 路径 in 所有路径:
+            if not 路径.lower().startswith(('http://', 'https://')):
+                标准化路径 = os.path.normpath(路径)
+                if 标准化路径 not in 过滤后的路径:
+                    过滤后的路径.append(标准化路径)
+
+        # print("找到的图片路径:", 过滤后的路径)  # 调试输出
+        return 过滤后的路径
+
     def 检查文件夹内md文件的图片完整性(self):
         文件夹路径 = self.获取文件夹路径()
         _, 所有md文件 = self.返回文件夹内的md文件(文件夹路径)
@@ -168,34 +183,50 @@ class Stats:
         文件名 = os.path.splitext(os.path.basename(md文件路径))[0]
         图片文件夹 = os.path.join(os.path.dirname(md文件路径), f'{文件名}.assets')
         缺失图片 = []
+
         for 图片路径 in 所有图片路径:
             图片文件名 = os.path.basename(图片路径)
             完整图片路径 = os.path.join(图片文件夹, 图片文件名)
-            if not os.path.exists(完整图片路径):缺失图片.append(图片路径)
+            if not os.path.exists(完整图片路径):
+                print(所有图片路径)
+                缺失图片.append(图片路径)
         return 缺失图片
+
     def md和assets和md内图片全部换名字(self):
         md文件路径 = self.获取文件路径()
-        if not md文件路径:return
-        新文件名 = QFileDialog.getSaveFileName(self.ui, "保存新文件", "", "Markdown Files (*.md)")[0]
-        if not 新文件名:return
-        # 读取文件内容
-        文件内容 = self.读取文件内容(md文件路径)
-        所有图片路径 = self.返回md内所有图片路劲(文件内容)
+        if not md文件路径:
+            return
+
+        # 获取新的文件名
+        新文件名, ok = QInputDialog.getText(self.ui, "输入新文件名", "请输入新的文件名（不包含扩展名）：")
+        if not ok or not 新文件名:
+            return
+
         旧文件名 = os.path.splitext(os.path.basename(md文件路径))[0]
-        新文件名_无后缀 = os.path.splitext(os.path.basename(新文件名))[0]
+        新md文件路径 = os.path.join(os.path.dirname(md文件路径), f"{新文件名}.md")
+        旧assets文件夹 = os.path.join(os.path.dirname(md文件路径), f"{旧文件名}.assets")
+        新assets文件夹 = os.path.join(os.path.dirname(md文件路径), f"{新文件名}.assets")
+
+        # 读取文件内容
+        with open(md文件路径, 'r', encoding='utf-8') as file:
+            内容 = file.read()
+
         # 更新文件内容中的图片路径
-        for 旧图片路径 in 所有图片路径:
-            新图片路径 = 旧图片路径.replace(f'{旧文件名}.assets', f'{新文件名_无后缀}.assets')
-            文件内容 = 文件内容.replace(旧图片路径, 新图片路径)
-        # 写入新文件
-        with open(新文件名, 'w', encoding='utf-8') as f:
-            f.write(文件内容)
-        # 重命名并移动assets文件夹
-        旧assets路径 = os.path.join(os.path.dirname(md文件路径), f'{旧文件名}.assets')
-        新assets路径 = os.path.join(os.path.dirname(新文件名), f'{新文件名_无后缀}.assets')
-        if os.path.exists(旧assets路径):
-            shutil.move(旧assets路径, 新assets路径)
-        self.显示消息("重命名完成", f"文件已重命名并保存为 {新文件名}\nAssets文件夹已更新")
+        更新后内容 = 内容.replace(f"{旧文件名}.assets", f"{新文件名}.assets")
+
+        # 重命名assets文件夹
+        if os.path.exists(旧assets文件夹):
+            os.rename(旧assets文件夹, 新assets文件夹)
+
+        # 保存更新后的内容到新文件
+        with open(新md文件路径, 'w', encoding='utf-8') as file:
+            file.write(更新后内容)
+
+        # 删除旧文件
+        os.remove(md文件路径)
+
+        self.显示消息("重命名完成", f"文件已重命名为 {新文件名}.md\n相关的assets文件夹和图片路径已更新。")
+
 
 if __name__ == '__main__':
     app = QApplication([])
