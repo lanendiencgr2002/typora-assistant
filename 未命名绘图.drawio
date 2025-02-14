@@ -1,6 +1,6 @@
 <mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36" version="26.0.13">
   <diagram name="第 1 页" id="sX91zNr1DAXh_7zorVKQ">
-    <mxGraphModel dx="1050" dy="522" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="724" dy="360" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -20,7 +20,30 @@
           <mxGeometry x="354" y="60" width="120" height="60" as="geometry" />
         </mxCell>
         <mxCell id="pMCm9M0TrmBxhx-DErAs-6" value="虚拟声卡" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="40" y="280" width="120" height="60" as="geometry" />
+          <mxGeometry x="40" y="260" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pMCm9M0TrmBxhx-DErAs-7" value="输入" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="234" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pMCm9M0TrmBxhx-DErAs-8" value="输出" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="354" y="160" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="pMCm9M0TrmBxhx-DErAs-9" value="监听A" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="474" y="170" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pMCm9M0TrmBxhx-DErAs-11" value="输出B" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="554" y="170" width="80" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="pMCm9M0TrmBxhx-DErAs-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="pMCm9M0TrmBxhx-DErAs-12">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="465" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="pMCm9M0TrmBxhx-DErAs-12" value="" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="200" y="240" width="530" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="pMCm9M0TrmBxhx-DErAs-19" value="全体B的输出" style="text;strokeColor=none;fillColor=none;html=1;fontSize=24;fontStyle=1;verticalAlign=middle;align=center;" vertex="1" parent="1">
+          <mxGeometry x="420" y="370" width="100" height="40" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
